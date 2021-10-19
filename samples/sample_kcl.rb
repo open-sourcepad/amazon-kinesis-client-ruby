@@ -17,12 +17,18 @@ require 'date'
 class SampleRecordProcessor < Aws::KCLrb::V2::RecordProcessorBase
   # (see Aws::KCLrb::V2::RecordProcessorBase#init_processor)
   def init_processor(initialize_input)
+    STDERR.puts("#####init_processor######{initialize_input}")
     @shard_id = initialize_input.shard_id
     @checkpoint_freq_seconds = 10
   end
 
   # (see Aws::KCLrb::V2::RecordProcessorBase#process_records)
   def process_records(process_records_input)
+    # STDERR.puts("#####process_records#####")
+    # process_records_input.records.each do |record|
+    #   STDERR.puts("#{record}")
+    # end
+
     last_seq = nil
     records = process_records_input.records
     records.each do |record|
@@ -41,16 +47,19 @@ class SampleRecordProcessor < Aws::KCLrb::V2::RecordProcessorBase
 
   # (see Aws::KCLrb::V2::RecordProcessorBase#lease_lost)
   def lease_lost(lease_lost_input)
+    STDERR.puts("#####lease_lost#####")
     #   Lease was stolen by another Worker.
   end
 
   # (see Aws::KCLrb::V2::RecordProcessorBase#shard_ended)
   def shard_ended(shard_ended_input)
+    STDERR.puts("#####shard_ended#####")
     checkpoint_helper(shard_ended_input.checkpointer)
   end
 
   # (see Aws::KCLrb::V2::RecordProcessorBase#shutdown_requested)
   def shutdown_requested(shutdown_requested_input)
+    STDERR.puts("#####shutdown_requested#####")
     checkpoint_helper(shutdown_requested_input.checkpointer)
   end
 
@@ -90,4 +99,3 @@ if __FILE__ == $0
   driver = Aws::KCLrb::KCLProcess.new(SampleRecordProcessor.new)
   driver.run
 end
-
